@@ -1,9 +1,0 @@
-[poepie] da
-[m] 43
-[radix] 7
-[poepie2] ja
-[x] -3232323
-[y] -32321
-[jemoeder] dadasd
-[add]
-dasdas
