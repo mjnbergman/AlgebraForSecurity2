@@ -188,7 +188,13 @@ public class BigIntegerCalculator {
 		return (char) (65 + (i - 10));
 	}
 
-
+        //@author Dustin Bessmes
+        /*
+	 * The subtraction function, performs a subtraction of two numbers of any length of a specified radix.
+	 * Outputs the result in the ParsedOutputData format for ease of use. 
+	 * Throws an exception when a digit of a larger radix than the specified one is found.
+	 * 
+	 */
 	public static ParsedOutputData subtract(ParsedInputData pd) throws Exception{
             
 		String n1 = pd.getNumberOne();
@@ -304,7 +310,7 @@ public class BigIntegerCalculator {
                         answer = answer.replaceAll("--", "");
                         
                         ParsedOutputData d = new ParsedOutputData();
-			d.setAnswer(answer);
+			d.setAnswer(checkZeros(answer));
                         return d;
                     }
 
@@ -386,7 +392,7 @@ public class BigIntegerCalculator {
 
                     ParsedOutputData d = new ParsedOutputData();
 
-                    d.setAnswer(properReversedOutput.replaceAll("--", ""));
+                    d.setAnswer(checkZeros(properReversedOutput.replaceAll("--", "")));
 
                     System.out.println("De output van: " + n1 + " - " + n2 + " = " + properReversedOutput);
 
@@ -394,6 +400,20 @@ public class BigIntegerCalculator {
                     return d;
                 }
 	}
+        
+        //@author Dustin Bessems
+        //Removes all heading 0s of a number (redundant).
+        private static String checkZeros(String s) {
+            for(int i = 0; i < s.length(); i++) {
+                if(s.charAt(i) != '0' && s.charAt(i) != '-') {
+                    break;
+                }
+                else if(s.charAt(i) == '0') {
+                    s = s.replaceFirst("0", "");
+                }
+            }
+            return s;
+        }
 
 
 	public static ParsedOutputData multiply(ParsedInputData pd) {
@@ -410,10 +430,68 @@ public class BigIntegerCalculator {
 	}
 
 
-	public static ParsedOutputData reduce(ParsedInputData pd) {
-		// TODO Auto-generated method stub
-		return null;
+	public static ParsedOutputData reduce(ParsedInputData pd) throws Exception{
+		
+            String n1 = pd.getNumberOne();
+            String mod = pd.getModulus();
+            int radix = pd.getRadix();
+            
+            String n1Abs = n1.replaceAll("-", "");
+            int k = String.valueOf(hexaToTen(n1, radix)).length();
+            int n = String.valueOf(hexaToTen("" + mod, radix)).length();
+            int n1Num = hexaToTen(n1Abs, radix);
+            int modNum = hexaToTen(mod, radix);
+            
+            for (int i = k - n; i >= 0; i--) {
+                while(n1Num >= modNum*Math.pow(10, i)) {
+                    n1Num -= modNum*Math.pow(10, i);
+                }
+            }
+            System.out.println(n1Num);
+            
+            if(n1.indexOf("-") != -1) {
+                n1Num = modNum - n1Num;
+            }
+            ParsedOutputData d = new ParsedOutputData();
+            d.setAnswer(tenToHexa(n1Num));
+            return d;
 	}
+        
+        //Function converts input of base radix to base 10 for 
+        //@author Dustin Bessems
+        private static int hexaToTen(String s, int radix) {
+            //Reverse the string, then multiply digit i by radix^i to get base 10 number
+            String sR = new StringBuilder(s).reverse().toString();
+            int b10 = 0;
+            for(int i = 0; i < s.length(); i++) {
+                int sChar = sR.charAt(i) - '0';
+                if(sChar >= 10) {
+                    sChar = hexaToInt(sR.charAt(i));
+                }
+                b10 += sChar * Math.pow(radix,i);
+            }
+            System.out.println(s + " becomes " + b10);
+            return b10;
+        }
+        
+        //Fucntion that converts base 10 number to a hexadecimal string
+        //@author Dustin Bessems
+        private static String tenToHexa(int ten) {
+            String s ="";
+            while(ten != 0) {
+                int rem = ten - (int) Math.floor(ten / 16) * 16;
+                ten = (int) Math.floor(ten / 16);
+                if(rem >= 10) {
+                    rem = intToHexa(rem);
+                }
+                s += rem;
+            }
+            if(s == "") {
+                s = "0";
+            }
+            //Reverse s to get the right hexa number
+            return s;
+        }
 
 
 	public static ParsedOutputData inverse(ParsedInputData pd) {
