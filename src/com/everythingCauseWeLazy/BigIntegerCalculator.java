@@ -3,7 +3,7 @@ package com.everythingCauseWeLazy;
 
 /**
  * 
- * @author Maiko Bergman, TODO: flikker hier je naam bij.
+ * @author Maiko Bergman, Guy Puts, TODO: flikker hier je naam bij.
  *
  *
  *	The main class for calculations, contains static methods for performing the various calculation functions.
@@ -188,21 +188,136 @@ public class BigIntegerCalculator {
 
 
 	public static ParsedOutputData subtract(ParsedInputData pd) {
+		
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	public static ParsedOutputData multiply(ParsedInputData pd) {
+		/**
+		 * 
+		 * @author Guy Puts, with code parts used from Maiko Bergman.
+		 *	Multiplication algorithm was based on the multiplication algorithm found in the course material
+		 *	Some code parts from Maiko's code were used.
+		 *	The class for multiplying integers in certain radixes.
+		 *
+		 */
+		String n1 = pd.getNumberOne();
+		String n2 = pd.getNumberTwo();
+		
+		boolean poNeg = false;
+		boolean negNeg = false;
+		
+		// If one number is negative and the other is positive, remove the signs and treat
+		// this addition as a subtraction of two positive numbers.
+		if((n1.indexOf("-") != -1 && n2.indexOf("-") == -1) || (n1.indexOf("-") == -1 && n2.indexOf("-") != -1)) {
+			poNeg = true;
+		}
+		// If both numbers are negative, remove the signs and treat this as an addition of two positive numbers,
+		// adding the sign at the end.
+		else if(n1.indexOf("-") != -1 && n2.indexOf("-") != -1) {
+			negNeg = true;
+		}
+		
+		if(poNeg) {
+			n1 = n1.replaceAll("-", "");
+			n2 = n2.replaceAll("-", "");
+			
+			System.out.println("PONEG!!!");
+		}
+		else {
+		
+			if(negNeg) {
+				n1 = n1.replaceAll("-", "");
+				n2 = n2.replaceAll("-", "");
+				
+				System.out.println("NEGNEG!!!");
+			}
+		}
+		
+		// Reverse the input numbers, as we want to start at the least significant digit for primary school addition
+		String rn1 = new StringBuilder(n1).reverse().toString();
+		String rn2 = new StringBuilder(n2).reverse().toString();
+		System.out.println("De reversed input strings zijn: " + rn1 + " + " + rn2);
+		int radix = pd.getRadix();
+		
+		String output = "";
+		int loopLength = rn1.length() + rn2.length();
+		for(int leadingZero = rn2.length(); leadingZero < loopLength - 1; leadingZero++) {
+			output="0"+output;
+		}
+		for(int i = 0; i < loopLength; i++) {
+			int carry = 0;
+			for(int j = 0; j < rn2.length(); j++) {
+				int t = output.charAt(i+j)+(rn1.charAt(i)*rn2.charAt(j))+carry;
+				carry = (int)Math.floor(t/radix);
+				output.replace(Integer.toString(i+j),  Integer.toString(t - carry*radix));
+			}
+			output.replace(Integer.toString(i+rn2.length()),  Integer.toString(carry));
+		}
+		while(output.charAt(loopLength - 1) == 0) {
+			output = output.substring(0, loopLength - 2);
+		}
+		
+		String properReversedOutput = new StringBuilder(output).reverse().toString();
+		
+		if(poNeg) {
+			StringBuilder stBuilder = new StringBuilder(properReversedOutput);
+			stBuilder.insert(0, "-");
+			properReversedOutput = stBuilder.toString();
+		}
+		
+		ParsedOutputData d = new ParsedOutputData();
+		
+		d.setAnswer(properReversedOutput);
+		
+		System.out.println("De output van: " + n1 + " * " + n2 + " = " + properReversedOutput);
 		
 		BigIntegerCalculator.MUL_COUNT++;
 		
-		return null;
+		return d;
 	}
 
 
 	public static ParsedOutputData karatsuba(ParsedInputData pd) {
-		// TODO Auto-generated method stub
+		//@author Guy Puts
+		String n1 = pd.getNumberOne();
+		String n2 = pd.getNumberTwo();
+		
+		boolean poNeg = false;
+		boolean negNeg = false;
+		
+		// If one number is negative and the other is positive, remove the signs and treat
+		// this addition as a subtraction of two positive numbers.
+		if((n1.indexOf("-") != -1 && n2.indexOf("-") == -1) || (n1.indexOf("-") == -1 && n2.indexOf("-") != -1)) {
+			poNeg = true;
+		}
+		// If both numbers are negative, remove the signs and treat this as an addition of two positive numbers,
+		// adding the sign at the end.
+		else if(n1.indexOf("-") != -1 && n2.indexOf("-") != -1) {
+			negNeg = true;
+		}
+		
+		if(poNeg) {
+			n1 = n1.replaceAll("-", "");
+			n2 = n2.replaceAll("-", "");
+			
+			System.out.println("PONEG!!!");
+		}
+		else {
+		
+			if(negNeg) {
+				n1 = n1.replaceAll("-", "");
+				n2 = n2.replaceAll("-", "");
+				
+				System.out.println("NEGNEG!!!");
+			}
+		}
+		/*public static String Karatsuba(n1, n2) {
+			return null;
+		}
+		*/
 		return null;
 	}
 
