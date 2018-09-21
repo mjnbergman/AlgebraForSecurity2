@@ -39,7 +39,7 @@ public class InputOutputParser {
 			String line = null;
 			
 			int radix = -1;
-			int modulus = -1;
+			String modulus = "";
 			String numberOne = "";
 			String numberTwo = "";
 			String operation = "";
@@ -62,7 +62,7 @@ public class InputOutputParser {
 		        	numberTwo = line.substring(line.indexOf("[y] ") + "[y] ".length());
 		        }
 		        else if(line.indexOf("[m] ") != -1) {
-		        	modulus = Integer.parseInt(line.substring(line.indexOf("[m] ") + "[m] ".length()));
+		        	modulus = line.substring(line.indexOf("[m] ") + "[m] ".length());
 		        }
 		        // If this line matches the regex, AKA it's the line specifying the function
 		        else if(line.matches(operatorMatchPattern)) {

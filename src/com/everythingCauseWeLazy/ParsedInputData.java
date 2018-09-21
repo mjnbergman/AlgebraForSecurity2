@@ -10,7 +10,7 @@ package com.everythingCauseWeLazy;
 public class ParsedInputData {
 
 	private int radix;
-	private int modulus;
+	private String modulus;
 	private String numberOne;
 	private String numberTwo;
 	
@@ -19,7 +19,7 @@ public class ParsedInputData {
 		numberTwo = "";
 	}
 	
-	public ParsedInputData(int radix, int modulus, String n1, String n2) {
+	public ParsedInputData(int radix, String modulus, String n1, String n2) {
 		this.radix = radix;
 		this.modulus = modulus;
 		this.numberOne = n1;
@@ -35,7 +35,7 @@ public class ParsedInputData {
 	public int getRadix() {
 		return this.radix;
 	}
-	public int getModulus() {
+	public String getModulus() {
 		return this.modulus;
 	}
 }
