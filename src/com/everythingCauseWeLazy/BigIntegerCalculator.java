@@ -506,15 +506,15 @@ public class BigIntegerCalculator {
 			if(rn1Multiplier=="f" || rn1Multiplier=="F") {
 				rn1Multiplier="15";
 			}
-			int rnMultiplierInt = Integer.parseInt(rn1Multiplier);
-			if(rnMultiplierInt==0) {
+			int rn1MultiplierInt = Integer.parseInt(rn1Multiplier);
+			if(rn1MultiplierInt==0) {
 				output="0"+output;
 			}
 			else {
 				for(int n = 0; n < rn2.length(); n++) {
-				
-					if(rnMultiplierInt==1) {
-						if()
+					for(int k = 0; k < rn1MultiplierInt; k++) {
+						//add stuff
+						
 					}
 				}
 			}
