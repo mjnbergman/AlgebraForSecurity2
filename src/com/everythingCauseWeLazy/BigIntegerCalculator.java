@@ -469,10 +469,6 @@ public class BigIntegerCalculator {
 		String rn2 = new StringBuilder(n2).reverse().toString();
 		System.out.println("De reversed input strings zijn: " + rn1 + " + " + rn2);
 		int radix = pd.getRadix();
-		/*
-		 * 
-		 * Previous version of multiplication algorithm which did not work
-		 * */
 		String output = "";
 		int loopLength = rn1.length() + rn2.length();
 		for(int leadingZero = 0; leadingZero < loopLength; leadingZero++) {
@@ -528,7 +524,7 @@ public class BigIntegerCalculator {
 			counter = tempOutputBuilder.toString().length() - 1;
 		}
 		output = tempOutputBuilder.toString();
-		System.out.println("De outpudfsdft van: " + n1 + " * " + n2 + " base " + radix + " = " + output);
+		System.out.println("De output van: " + n1 + " * " + n2 + " base " + radix + " = " + output);
 		//Own attempt at making multiplication algorithm:
 		/*for(int i = 0; i < rn1.length(); i++) {
 			String rn1Multiplier=String.valueOf(rn1.charAt(i));
@@ -586,8 +582,7 @@ public class BigIntegerCalculator {
 	public static ParsedOutputData karatsuba(ParsedInputData pd) throws Exception {
 		//@author Guy Puts
 		//Some code used from Maiko Bergman's addition method
-		//This method uses the algorithm of Karatsuba, described in the course material,
-		//and also uses the Karatsuba algorithm by Keith Schwarz described on http://www.keithschwarz.com/interesting/code/karatsuba/Karatsuba.python.html
+		//This method uses the multiplication algorithm of Karatsuba, described in the course material
 		String n1 = pd.getNumberOne();
 		String n2 = pd.getNumberTwo();
 		
@@ -663,7 +658,7 @@ public class BigIntegerCalculator {
 			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), n2Lo, n2Hi);
 			String rightRes=BigIntegerCalculator.karatsuba(tPd).toString();
 			
-			//prepare subtraction necessary for Karatsuba algorithm, as described in the algorithm given in the URL on top of this method
+			//prepare subtraction necessary for Karatsuba algorithm
 			String subLeftRes = leftRes;
 			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), leftRes, rightRes);
 			String workingRes=BigIntegerCalculator.add(tPd).toString();
