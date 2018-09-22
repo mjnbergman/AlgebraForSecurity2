@@ -399,7 +399,6 @@ public class BigIntegerCalculator {
 
                     return d;
                 }
->>>>>>> 4bd5a2342e34793fc553e09609803a286f79835f
 	}
         
         //@author Dustin Bessems
@@ -417,7 +416,7 @@ public class BigIntegerCalculator {
         }
 
 
-	public static ParsedOutputData multiply(ParsedInputData pd) {
+	public static ParsedOutputData multiply(ParsedInputData pd) throws Exception {
 		/**
 		 * 
 		 * @author Guy Puts, with code parts used from Maiko Bergman.
@@ -464,7 +463,10 @@ public class BigIntegerCalculator {
 		String rn2 = new StringBuilder(n2).reverse().toString();
 		System.out.println("De reversed input strings zijn: " + rn1 + " + " + rn2);
 		int radix = pd.getRadix();
-		
+		String output=""
+		/*
+		 * 
+		 * Previous version of multiplication algorithm which did not work
 		String output = "";
 		int loopLength = rn1.length() + rn2.length();
 		for(int leadingZero = rn2.length(); leadingZero < loopLength - 1; leadingZero++) {
@@ -482,7 +484,41 @@ public class BigIntegerCalculator {
 		while(output.charAt(loopLength - 1) == 0) {
 			output = output.substring(0, loopLength - 2);
 		}
-		
+		*/
+		//Own attempt at making multiplication algorithm:
+		for(int i = 0; i < rn1.length(); i++) {
+			String rn1Multiplier=String.valueOf(rn1.charAt(i));
+			if(rn1Multiplier=="a" || rn1Multiplier=="A") {
+				rn1Multiplier="10";
+			}
+			if(rn1Multiplier=="b" || rn1Multiplier=="B") {
+				rn1Multiplier="11";
+			}
+			if(rn1Multiplier=="c" || rn1Multiplier=="C") {
+				rn1Multiplier="12";
+			}
+			if(rn1Multiplier=="d" || rn1Multiplier=="D") {
+				rn1Multiplier="13";
+			}
+			if(rn1Multiplier=="e" || rn1Multiplier=="E") {
+				rn1Multiplier="14";
+			}
+			if(rn1Multiplier=="f" || rn1Multiplier=="F") {
+				rn1Multiplier="15";
+			}
+			int rnMultiplierInt = Integer.parseInt(rn1Multiplier);
+			if(rnMultiplierInt==0) {
+				output="0"+output;
+			}
+			else {
+				for(int n = 0; n < rn2.length(); n++) {
+				
+					if(rnMultiplierInt==1) {
+						if()
+					}
+				}
+			}
+		}
 		String properReversedOutput = new StringBuilder(output).reverse().toString();
 		
 		if(poNeg) {
@@ -503,13 +539,19 @@ public class BigIntegerCalculator {
 	}
 
 
-	public static ParsedOutputData karatsuba(ParsedInputData pd) {
+	public static ParsedOutputData karatsuba(ParsedInputData pd) throws Exception {
 		//@author Guy Puts
+		//Some code used from Maiko Bergman's addition method
+		//This method uses the algorithm of Karatsuba, described in the course material,
+		//and also uses the Karatsuba algorithm by Keith Schwarz described on http://www.keithschwarz.com/interesting/code/karatsuba/Karatsuba.python.html
 		String n1 = pd.getNumberOne();
 		String n2 = pd.getNumberTwo();
 		
 		boolean poNeg = false;
 		boolean negNeg = false;
+		
+		int radix = pd.getRadix();
+		String output;
 		
 		// If one number is negative and the other is positive, remove the signs and treat
 		// this addition as a subtraction of two positive numbers.
@@ -537,11 +579,82 @@ public class BigIntegerCalculator {
 				System.out.println("NEGNEG!!!");
 			}
 		}
-		/*public static String Karatsuba(n1, n2) {
-			return null;
+		
+		//append front of string with zeroes
+		int length=Math.max(n1.length(), n2.length());
+		while(n1.length() < length) {
+			n1="0"+n1;
 		}
-		*/
-		return null;
+		while(n2.length() < length) {
+			n2="0"+n1;
+		}
+		//if strings are both length 1, compute the result manually
+		if(length == 1) {
+			int result = n1.charAt(0)*n2.charAt(0);
+			if(result < radix) {
+				output = String.valueOf(result);
+			}
+			else {
+				output = String.valueOf(result / radix)+String.valueOf(result % radix);
+			}
+		}
+		else {
+			//split strings as described in the Karatsuba algorithm
+			int leftSplit = (length + 1) / 2;
+			int rightSplit = length / 2;
+			
+			String n1Lo = n1.substring(0, leftSplit);
+			String n1Hi = n1.substring(leftSplit, length);
+			String n2Lo = n2.substring(0, leftSplit);
+			String n2Hi = n2.substring(leftSplit, length);
+			
+			//do the three necessary multiplications
+			ParsedInputData tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), n1Lo, n1Hi);
+			String leftRes=BigIntegerCalculator.karatsuba(tPd).toString();
+			String midResAdder1=BigIntegerCalculator.add(tPd).toString();
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), n2Lo, n2Hi);
+			String midResAdder2=BigIntegerCalculator.add(tPd).toString();
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), midResAdder1, midResAdder2);
+			String midRes=BigIntegerCalculator.karatsuba(tPd).toString();
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), n2Lo, n2Hi);
+			String rightRes=BigIntegerCalculator.karatsuba(tPd).toString();
+			
+			//prepare subtraction necessary for Karatsuba algorithm, as described in the algorithm given in the URL on top of this method
+			String subLeftRes = leftRes;
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), leftRes, rightRes);
+			String workingRes=BigIntegerCalculator.add(tPd).toString();
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), midRes, workingRes);
+			String subMidRes=BigIntegerCalculator.subtract(tPd).toString();
+			String subRightRes=rightRes;
+			
+			//compute last step of algorithm, as described in URL
+			String leftProd = subLeftRes;
+			for(int n = 0; n < 2 * rightSplit; n++) {
+				leftProd = leftProd + "0";
+			}
+			String midProd = subMidRes;
+			for(int n = 0; n < rightSplit; n++) {
+				midProd = midProd + "0";
+			}
+			String rightProd = subRightRes;
+			
+			//first add of last step
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), leftProd, midProd);
+			String firstAdd=BigIntegerCalculator.add(tPd).toString();
+			
+			//second add of last step
+			tPd = new ParsedInputData(pd.getRadix(), pd.getModulus(), firstAdd, rightProd);
+			String secondAdd=BigIntegerCalculator.add(tPd).toString();
+			output = secondAdd;
+		}
+		ParsedOutputData d = new ParsedOutputData();
+		d.setAnswer(output);
+		//increment counter three times, for Karatsuba requires three multiplications
+		BigIntegerCalculator.MUL_COUNT++;
+		BigIntegerCalculator.MUL_COUNT++;
+		BigIntegerCalculator.MUL_COUNT++;
+		
+		return d;
 	}
 
 
